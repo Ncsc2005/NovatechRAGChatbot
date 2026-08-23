@@ -100,12 +100,18 @@ def ask_rag(question: str, top_k: int = 3) -> dict:
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
-        if msg["role"] == "assistant" and msg.get("sources"):
-            st.caption(f"Sources: {', '.join(msg['sources'])}")
-        with st.expander("View retrieved document chunks"):
-            for i, (chunk_text, source_file, score) in enumerate(msg["chunks"], 1):
-                st.markdown(f"**Chunk {i} — `{source_file}` (Score: {score:.2f})**")
-                st.info(chunk_text) 
+
+        if msg["role"] == "assistant":
+            if msg.get("sources"):
+                st.caption(f"Sources: {', '.join(msg['sources'])}")
+
+            if msg.get("chunks"):
+                with st.expander("View retrieved document chunks"):
+                    for i, (chunk_text, source_file, score) in enumerate(msg["chunks"], 1):
+                        st.markdown(
+                            f"**Chunk {i} — `{source_file}` (Score: {score:.2f})**"
+                        )
+                        st.info(chunk_text)
 question = st.chat_input("Ask a question about NovaTech policies or products...")
 if question:
     with st.chat_message("user"):
